@@ -15,8 +15,10 @@ public class FlutterEvents {
           public void onPrimaryClipChanged() {
             if(clipboardManager.hasPrimaryClip() && clipboardManager.getPrimaryClip().getItemCount() > 0){
                 String word = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
-                GeneratedPluginRegistrant.eventSink.success(word);
-                Toast.makeText(activity.getApplicationContext(), word,Toast.LENGTH_LONG).show();
+                if(word != null){
+                    // GeneratedPluginRegistrant.eventSink.success(word);
+                }
+                // Toast.makeText(activity.getApplicationContext(), word,Toast.LENGTH_LONG).show();
             }
           }
         };
