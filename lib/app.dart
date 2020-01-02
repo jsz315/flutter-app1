@@ -1,5 +1,6 @@
 import 'package:app1/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class App extends StatefulWidget {
   @override
@@ -19,6 +20,12 @@ class _AppState extends State<App> {
     _controller.addListener((){
       print(_controller.index);
     });
+
+    var permission =  PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+    print("permission status is " + permission.toString());
+    PermissionHandler().requestPermissions(<PermissionGroup>[
+      PermissionGroup.storage, // 在这里添加需要的权限
+    ]);
   }
   
   @override

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:app1/tooler/download_tooler.dart';
 
@@ -14,46 +15,65 @@ class _WebPageState extends State<WebPage> {
   WebViewController _webViewController;
   String _title = "";
 
+  void ininState(){
+    super.initState();
+    var permission =  PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+    print("permission status is " + permission.toString());
+    PermissionHandler().requestPermissions(<PermissionGroup>[
+      PermissionGroup.storage, // 在这里添加需要的权限
+    ]);
+  }
+
   _callJavascript(){
     // var js = 'document.querySelector("#logo").style.backgroundColor="#440099";';
     var js = [
       'var video = document.querySelector("video");',
       'var src = video.getAttribute("src");',
       'var poster = video.getAttribute("poster");',
-      // 'JSON.stringify({src:1, poster:2})'
-      'src + "," + poster'
+      'JSON.stringify({src, poster})'
+      // 'src + "," + poster'
     ].join("");
     _webViewController.evaluateJavascript(js).then((res){
       print(res);
       String str1 = res.toString();
-      var aim = str1.replaceAll(new RegExp(r'"'), "");
+      var aim = str1.replaceAll(new RegExp(r'\\'), "");
+      print("111====");
       print(aim);
-
-      var list = aim.split(",");
-      print(list);
-      print(list[0]);
+      aim = aim.substring(1, aim.length -1 );
+      print("222====");
+      print(aim);
+      // aim = aim.replaceAll(new RegExp(r'\\'), "");
+      print("333====");
+      print(aim.split("").join(","));
       
-      // start(list[1]);
-      DownloadTooler.start(list[1]);
+      // var str = "{\"src\":1,\"poster\":2}";
+      // print(str.length);
+      // print(res.length);
 
-      var obj = {
-        "a":1,
-        "b":4
-      };
-      print(obj["a"]);
-      print(obj["b"]);
+      dynamic fk = json.decode(aim);
+      print("444====");
+      print(fk);
+      print("555====");
+      print(fk["src"]);
+
+      // dynamic well = json.decode(str);
+      // print(well["src"]);
+
+      // var list = aim.split(",");
+      // print(list);
+      // print(list[0]);
+      
+      DownloadTooler.start(fk["poster"]);
+
+      // var obj = {
+      //   "a":1,
+      //   "b":4
+      // };
+      // print(obj["a"]);
+      // print(obj["b"]);
 
       // Map<String, dynamic> user = JSON.decode(json);
 
-      var str = "{\"src\":1,\"poster\":2}";
-      print(str.length);
-      print(res.length);
-
-      dynamic fk = json.decode(str);
-      // Map<String, dynamic> fk = new Map<String, dynamic>.from(json.decode(res));
-      print(fk);
-      print(fk.toString());
-      print(fk["src"]);
       
 
       // Map map = json.decode(res);
