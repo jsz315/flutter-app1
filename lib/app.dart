@@ -1,6 +1,10 @@
-import 'package:app1/pages/home_page.dart';
+import './pages/about_page.dart';
+import './pages/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import './pages/home_page.dart';
+import './tooler/download_tooler.dart';
 
 class App extends StatefulWidget {
   @override
@@ -21,11 +25,14 @@ class _AppState extends State<App> {
       print(_controller.index);
     });
 
+    // DownloadTooler.init();
+
     var permission =  PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
     print("permission status is " + permission.toString());
     PermissionHandler().requestPermissions(<PermissionGroup>[
       PermissionGroup.storage, // 在这里添加需要的权限
     ]);
+    
   }
   
   @override
@@ -36,8 +43,8 @@ class _AppState extends State<App> {
           controller: _controller,
           children: <Widget>[
             new HomePage(),
-            Text("page2"),
-            Text("page3"),
+            new DetailPage(),
+            new AboutPage(),
           ],
         ),
       ) ,

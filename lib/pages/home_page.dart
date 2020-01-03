@@ -1,4 +1,7 @@
-import 'package:app1/pages/web_page.dart';
+import '../movie_model.dart';
+import 'package:provider/provider.dart';
+
+import './web_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -7,21 +10,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _items = List<String>.generate(1000, (i) => "Item $i");
 
   _itemClick(id) {
+    var movieModel = Provider.of<MovieModel>(context);
+    movieModel.changeTitle();
+    movieModel.choose(id);
+    var movie = movieModel.movies[movieModel.index];
     Navigator.push(
         context,
         new MaterialPageRoute(
-          builder: (context) => WebPage()
+          builder: (context) => WebPage(
+            movie: movie
+          )
         )
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    var movieModel = Provider.of<MovieModel>(context);
+    var movies = movieModel.movies;
+    print("=====");
+    print(movies);
+
     ListView _listView = ListView.builder(
-        itemCount: _items.length,
+        itemCount: movies.length,
         itemBuilder: (BuildContext context, int id) {
           return GestureDetector(
             onTap: () {
@@ -42,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          _items[id] + "很好" * 90,
+                          movies[id]["word"],
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style:
@@ -72,7 +85,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text("主页"),
+        // title: Text(Provider.of<String>(context)),
+        // title: Consumer<String>(builder: (context, data, child){
+        //   return Text(data + " -1");
+        // }),
+        title: Consumer<MovieModel>(builder: (context, data, child){
+          return Text(data.title);
+        }),
         centerTitle: true,
       ),
       body: Container(

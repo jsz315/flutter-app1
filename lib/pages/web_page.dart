@@ -1,22 +1,34 @@
 import 'dart:convert';
+import 'package:app1/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:app1/tooler/download_tooler.dart';
+import '../movie_model.dart';
+import '../tooler/download_tooler.dart';
 
 class WebPage extends StatefulWidget {
+  final movie;
+  WebPage({this.movie});
+
   @override
   _WebPageState createState() => _WebPageState();
 }
 
 class _WebPageState extends State<WebPage> {
+
   WebViewController _webViewController;
   String _title = "";
+  var _movie;
 
-  void ininState(){
+  void initState(){
     super.initState();
+    _movie = widget.movie;
+    print("initState current movie");
+    print(_movie);
+
     var permission =  PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
     print("permission status is " + permission.toString());
     PermissionHandler().requestPermissions(<PermissionGroup>[
@@ -24,7 +36,7 @@ class _WebPageState extends State<WebPage> {
     ]);
   }
 
-  _callJavascript(){
+  void _callJavascript(){
     // var js = 'document.querySelector("#logo").style.backgroundColor="#440099";';
     var js = [
       'var video = document.querySelector("video");',
@@ -37,78 +49,43 @@ class _WebPageState extends State<WebPage> {
       print(res);
       String str1 = res.toString();
       var aim = str1.replaceAll(new RegExp(r'\\'), "");
-      print("111====");
-      print(aim);
       aim = aim.substring(1, aim.length -1 );
-      print("222====");
-      print(aim);
-      // aim = aim.replaceAll(new RegExp(r'\\'), "");
-      print("333====");
-      print(aim.split("").join(","));
-      
-      // var str = "{\"src\":1,\"poster\":2}";
-      // print(str.length);
-      // print(res.length);
-
-      dynamic fk = json.decode(aim);
-      print("444====");
-      print(fk);
-      print("555====");
-      print(fk["src"]);
-
-      // dynamic well = json.decode(str);
-      // print(well["src"]);
-
-      // var list = aim.split(",");
-      // print(list);
-      // print(list[0]);
-      
-      DownloadTooler.start(fk["poster"]);
-
-      // var obj = {
-      //   "a":1,
-      //   "b":4
-      // };
-      // print(obj["a"]);
-      // print(obj["b"]);
-
-      // Map<String, dynamic> user = JSON.decode(json);
-
-      
-
-      // Map map = json.decode(res);
-      // var movie = new Movie.fromJson(map);
-      // print(movie.src);
-      // print(movie.poster);
-
-      // String result = "{\"status\": 0, \"description\": \"success\", \"data\": {\"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJtZW1pZCI6IjEzOTgxOTgzNTMyIiwiY29tcGFueV9pZCI6MjAxNzExMjQzLCJleHAiOjE1NDUyODA5MjB9.3RnJR1i70jD1TUpDn52UTgOrqhhXRZpvS9yMMTD4G74\"}, \"extra\": {\"ssize\": 1, \"snow\": 1542688920, \"other\": null}}";//response.data.toString();
-      // print(result);
-      // Map<String, dynamic> resultMap = json.decode(result);
-      // print(resultMap['description']);
-      // print(resultMap['status']);
-      
+      dynamic item = json.decode(aim);
+      // DownloadTooler.start(item["poster"], item["src"]);
+      Core.instance.downloadTooler.start(_movie["id"], item["poster"], item["src"]);
     });
     
   }
 
+  void _setTitle(){
+    _webViewController.evaluateJavascript("document.title").then((res){
+      setState(() {
+        _title = res;
+      });
+      // _movie["title"] = res;
+      Core.instance.sqlTooler.updateTitle(_movie["id"], res);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // var movieModel = Provider.of<MovieModel>(context);
+    // _movie = movieModel.movies[movieModel.index];
+    print("build current movie");
+    print(_movie);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
       ),
       body: WebView(
-        initialUrl: "http://kphshanghai.m.chenzhongtech.com/s/xNbMeYmE",
+        initialUrl: _movie["link"],
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController){
           _webViewController = webViewController;
         },
         onPageFinished: (url){
-          _webViewController.evaluateJavascript("document.title").then((res){
-            setState(() {
-              _title = res;
-            });
-          });
+          _setTitle();
         },
         navigationDelegate: (NavigationRequest navigationRequest){
           // if(navigationRequest.url.startsWith("http://")){
@@ -127,30 +104,19 @@ class _WebPageState extends State<WebPage> {
   }
 }
 
-class Movie {
-  final String src;
-  final String poster;
+// class Movie {
+//   final String src;
+//   final String poster;
 
-  Movie(this.src, this.poster);
+//   Movie(this.src, this.poster);
 
-  Movie.fromJson(Map<dynamic, dynamic> json)
-      : src = json['src'],
-        poster = json['poster'];
+//   Movie.fromJson(Map<dynamic, dynamic> json)
+//       : src = json['src'],
+//         poster = json['poster'];
 
-  Map<dynamic, dynamic> toJson() =>
-    {
-      'src': src,
-      'poster': poster,
-    };
-}
-
-// start(fileUrl) async{
-//   var dio = new Dio();
-//   var fileDir = await getApplicationDocumentsDirectory();
-//   await dio.download(fileUrl, "${fileDir.path}/1234.jpg", onReceiveProgress: (received, total) {
-//     if (total != -1) {
-//       print("Rec: $received , Total: $total");
-//       print(((received / total) * 100).toStringAsFixed(0) + "%");
-//     }
-//   });
+//   Map<dynamic, dynamic> toJson() =>
+//     {
+//       'src': src,
+//       'poster': poster,
+//     };
 // }
