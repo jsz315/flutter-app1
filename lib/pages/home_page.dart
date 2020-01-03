@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../movie_model.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +25,19 @@ class _HomePageState extends State<HomePage> {
             movie: movie
           )
         )
+    );
+  }
+
+  Image _getImage(path){
+    if(path == null){
+      return Image.network(
+        "https://oimagec4.ydstatic.com/image?id=-5397300958976572132&product=adpublish&w=520&h=347",
+        fit: BoxFit.cover
+      );
+    }
+    return Image.file(
+      File(path),
+      fit: BoxFit.cover,
     );
   }
 
@@ -71,9 +86,7 @@ class _HomePageState extends State<HomePage> {
                     margin: EdgeInsets.only(left: 30),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                          "https://oimagec4.ydstatic.com/image?id=-5397300958976572132&product=adpublish&w=520&h=347",
-                          fit: BoxFit.cover),
+                      child: _getImage(movies[id]["image"]),
                     ),
                   )
                 ],
