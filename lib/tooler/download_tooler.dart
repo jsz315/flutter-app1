@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:app1/core.dart';
+import '../core.dart';
 
 import './sql_tooler.dart';
 import 'package:dio/dio.dart';

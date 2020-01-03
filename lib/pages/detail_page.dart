@@ -1,5 +1,6 @@
-import 'package:app1/core.dart';
-import 'package:app1/tooler/string_tooler.dart';
+import '../core.dart';
+import '../tooler/string_tooler.dart';
+import '../tooler/toast_tooler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,7 @@ class _DetailPageState extends State<DetailPage> {
     setState(() {
       _runing = c;
     });
+    ToastTooler.toast(context, msg: "check", position: ToastPostion.bottom);
   }
 
   void _addWord() async{

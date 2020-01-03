@@ -1,4 +1,4 @@
-import 'package:app1/core.dart';
+import './core.dart';
 import 'package:provider/provider.dart';
 
 import './movie_model.dart';

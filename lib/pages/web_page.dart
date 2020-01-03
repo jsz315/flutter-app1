@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:app1/core.dart';
+import '../core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';

@@ -1,6 +1,8 @@
 
-import 'package:app1/core.dart';
-import 'package:app1/tooler/string_tooler.dart';
+import 'package:app1/tooler/toast_tooler.dart';
+
+import '../core.dart';
+import './string_tooler.dart';
 import 'package:flutter/services.dart';
 
 class ChannelTooler{
@@ -25,6 +27,13 @@ class ChannelTooler{
 
   void _onError(Object obj){
 
+  }
+
+  void info(){
+    Future<String> future = _methodChannel.invokeMethod("info");
+    future.then((message) {
+      print(message);
+    });
   }
 
   void run(runing){

@@ -16,9 +16,10 @@ public class FlutterEvents {
             if(clipboardManager.hasPrimaryClip() && clipboardManager.getPrimaryClip().getItemCount() > 0){
                 String word = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
                 if(word != null){
-                     GeneratedPluginRegistrant.eventSink.success(word);
+                    GeneratedPluginRegistrant.eventSink.success(word);
+                    Toast.makeText(activity.getApplicationContext(), "内容已经复制！",Toast.LENGTH_LONG).show();
                 }
-                // Toast.makeText(activity.getApplicationContext(), word,Toast.LENGTH_LONG).show();
+
             }
           }
         };

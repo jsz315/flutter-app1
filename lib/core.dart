@@ -1,6 +1,6 @@
-import 'package:app1/tooler/channel_tooler.dart';
-import 'package:app1/tooler/download_tooler.dart';
-import 'package:app1/tooler/sql_tooler.dart';
+import './tooler/channel_tooler.dart';
+import './tooler/download_tooler.dart';
+import './tooler/sql_tooler.dart';
 
 class Core {
   // 工厂模式 : 单例公开访问点
