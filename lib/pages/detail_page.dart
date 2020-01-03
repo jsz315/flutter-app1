@@ -33,11 +33,15 @@ class _DetailPageState extends State<DetailPage> {
     var list = StringTooler.getData(data);
     if(list.length == 2){
       await Core.instance.sqlTooler.add(list[0], list[1]);
-      List<Map> movies = await Core.instance.sqlTooler.movies();
-      var movieModel = Provider.of<MovieModel>(context);
-      movieModel.update(movies);
+      _update();
     }
     
+  }
+
+  void _update() async{
+    List<Map> movies = await Core.instance.sqlTooler.movies();
+    var movieModel = Provider.of<MovieModel>(context);
+    movieModel.update(movies);
   }
 
   @override
@@ -54,8 +58,13 @@ class _DetailPageState extends State<DetailPage> {
               onChanged: _changeRuning,
             ),
           ],),
-          RaisedButton(
+          MaterialButton(
+            child: new Text('添加数据'),
             onPressed: (){_addWord();},
+          ),
+          MaterialButton(
+            child: new Text('刷新数据'),
+            onPressed: (){_update();},
           )
         ],
       ) 
