@@ -10,6 +10,8 @@ class ChannelTooler{
   MethodChannel _methodChannel = const MethodChannel('jsz_plugin_method');
   EventChannel _eventChannel = EventChannel('jsz_plugin_event');
 
+  List<SystemListener> _listeners = [];
+
   ChannelTooler();
 
   void init(){
@@ -23,17 +25,22 @@ class ChannelTooler{
       Core.instance.sqlTooler.add(list[0], list[1]);
     }
     // Core.instance.sqlTooler.add(obj);
+    _listeners.forEach((listener){
+      listener.onReceive(obj);
+    });
   }
 
   void _onError(Object obj){
 
   }
 
-  void info(){
-    Future<String> future = _methodChannel.invokeMethod("info");
-    future.then((message) {
-      print(message);
-    });
+  void listen(SystemListener systemListener){
+    _listeners.add(systemListener);
+  }
+
+  Future<String> info() async{
+    var res = await _methodChannel.invokeMethod("info");
+    return res;
   }
 
   void run(runing){
@@ -42,5 +49,9 @@ class ChannelTooler{
       print(message);
     });
   }
+}
+
+class SystemListener{
+  onReceive(obj){}
 }
   

@@ -1,3 +1,5 @@
+import '../tooler/channel_tooler.dart';
+
 import '../core.dart';
 import '../tooler/string_tooler.dart';
 import '../tooler/toast_tooler.dart';
@@ -7,17 +9,46 @@ import 'package:provider/provider.dart';
 import '../movie_model.dart';
 
 class DetailPage extends StatefulWidget {
+  DetailPage(){
+    print("DetailPage");
+  }
   @override
   _DetailPageState createState() => _DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
+class _DetailPageState extends State<DetailPage> with AutomaticKeepAliveClientMixin implements SystemListener {
 
-  bool _runing;
+  bool _runing = false;
+  var _copyData = "暂无";
+
+  @override
+  bool get wantKeepAlive => true;
 
   void initState(){
     super.initState();
-    _runing = false;
+    // _runing = false;
+    print("initState");
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    Core.instance.channelTooler.listen(this);
+  }
+
+  @override
+  onReceive(obj) {
+    print(obj);
+    setState(() {
+      _copyData = obj;
+    });
+  }
+
+  void _callOs() async{
+    var res = await Core.instance.channelTooler.info();
+    print(res);
+    ToastTooler.toast(context, msg: res);
   }
 
   void _changeRuning(c){
@@ -48,6 +79,8 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    print("build call");
     return Container(
       child: Column(
         children: <Widget>[
@@ -61,13 +94,22 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ],),
           MaterialButton(
+            color: Colors.amber,
             child: new Text('添加数据'),
             onPressed: (){_addWord();},
           ),
           MaterialButton(
+            color: Colors.amber,
             child: new Text('刷新数据'),
             onPressed: (){_update();},
-          )
+          ),
+          MaterialButton(
+            color: Colors.amber,
+            child: new Text('调用系统方法'),
+            onPressed: (){_callOs();},
+          ),
+          Text("复制的文字"),
+          Text(_copyData)
         ],
       ) 
     );

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../core.dart';
 import '../movie_model.dart';
 import 'package:provider/provider.dart';
 
@@ -11,13 +12,18 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+
+  var _movies = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   _itemClick(id) {
     var movieModel = Provider.of<MovieModel>(context);
     movieModel.changeTitle();
     movieModel.choose(id);
-    var movie = movieModel.movies[movieModel.index];
+    var movie = _movies[id];
     Navigator.push(
         context,
         new MaterialPageRoute(
@@ -42,14 +48,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies(){
+    super.didChangeDependencies();
+    _update();
+  }
+
+  void _update() async{
+    List<Map> movies = await Core.instance.sqlTooler.movies();
     var movieModel = Provider.of<MovieModel>(context);
-    var movies = movieModel.movies;
-    print("=====");
-    print(movies);
+    movieModel.update(movies);
+    // var movieModel = Provider.of<MovieModel>(context);
+    // var movies = movieModel.movies;
+    setState(() {
+      _movies = movies;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    print("===build movies===");
 
     ListView _listView = ListView.builder(
-        itemCount: movies.length,
+        itemCount: _movies.length,
         itemBuilder: (BuildContext context, int id) {
           return GestureDetector(
             onTap: () {
@@ -70,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          movies[id]["word"],
+                          _movies[id]["word"],
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style:
@@ -86,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                     margin: EdgeInsets.only(left: 30),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: _getImage(movies[id]["image"]),
+                      child: _getImage(_movies[id]["image"]),
                     ),
                   )
                 ],
@@ -107,6 +134,7 @@ class _HomePageState extends State<HomePage> {
         }),
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(onPressed: (){_update();},),
       body: Container(
         child: _listView,
       ),
